@@ -1,0 +1,60 @@
+version: '3.7'
+services:
+  app:
+    container_name: lumen-app
+    build:
+      context: .
+      dockerfile: .docker/app/Dockerfile
+    tty: true
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+      - db-test
+    links:
+      - db
+      - db-test
+    volumes:
+      - .:/var/www/html
+    networks:
+      - lumen
+
+  db:
+    image: mysql:8.0
+    container_name: lumen-db
+    restart: always
+    ports:
+      - "33072:3306"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: main
+      MYSQL_USER: admin
+      MYSQL_ROOT: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql
+    networks:
+      - lumen
+
+  db-test:
+    image: mysql:8.0
+    container_name: lumen-db-test
+    restart: always
+    ports:
+      - "33073:3306"
+    environment:
+      MYSQL_HOST: db-test
+      MYSQL_DATABASE: test
+      MYSQL_USER: admin
+      MYSQL_ROOT: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql-test
+    networks:
+      - lumen
+
+networks:
+  lumen:
+    driver: bridge
