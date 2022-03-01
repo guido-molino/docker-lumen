@@ -6,8 +6,10 @@ RUN docker-php-ext-install pdo pdo_mysql sockets
 RUN curl -sS https://getcomposer.org/installer​ | php -- \
     --install-dir=/usr/local/bin --filename=composer
 
+# SET user permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod  775 -R /var/www/html
 
+# Serve the app
 EXPOSE 80
 CMD php -S 0.0.0.0:80 -t public
